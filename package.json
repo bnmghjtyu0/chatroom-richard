@@ -1,16 +1,23 @@
 {
     "name": "chatroom-richard",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
+    "version": "0.0.0",
+    "private": true,
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "start": "node ./bin/www",
+        "dev": "concurrently \"npm run server\" \"npm run client\"",
+        "client-install": "npm install --prefix client",
+        "server": "nodemon ./bin/www",
+        "client": "npm start --prefix client",
+        "heroku-postbuild": "cd client && npm install && npm run build"
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
     "dependencies": {
-        "express": "^4.15.2",
-        "socket.io": "^1.7.3"
+        "concurrently": "^5.1.0",
+        "cookie-parser": "~1.4.4",
+        "debug": "~2.6.9",
+        "express": "~4.16.1",
+        "http-errors": "~1.6.3",
+        "morgan": "~1.9.1",
+        "nodemon": "^2.0.2",
+        "pug": "2.0.0-beta11"
     }
 }
