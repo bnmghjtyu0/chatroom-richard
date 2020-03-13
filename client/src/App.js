@@ -12,7 +12,7 @@ function App() {
 
   const connectWebSocket = () => {
     //開啟
-    setSocket(webSocket("http://localhost:3000"));
+    setSocket(webSocket("/"));
   };
 
   React.useEffect(() => {
