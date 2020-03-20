@@ -1,0 +1,19 @@
+@mixin mediaQuery($size) {
+    @if ($size== 'col-xs') {
+        @media (max-width: 767px) {
+            @content;
+        }
+    } @else if($size== 'col-sm') {
+        @media (min-width: 768px) and (max-width: 991px) {
+            @content;
+        }
+    } @else if($size== 'col-md') {
+        @media (min-width: 992px) and (max-width: 1199px) {
+            @content;
+        }
+    } @else if($size== 'col-lg') {
+        @media (min-width: 1200) {
+            @content;
+        }
+    }
+}

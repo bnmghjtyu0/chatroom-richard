@@ -1,25 +1,23 @@
 import React from 'react';
-import axios from 'axios';
-import logo from './logo.svg';
+import { Route, Switch, Link } from 'react-router-dom';
+
 import './App.css';
+import './styles/main.scss';
+import Home from './pages/home';
+import ChatRoom from './pages/chatroom';
+
+
 
 function App() {
-    const [datas, setDatas] = React.useState({});
-    const asyncHello = async () => {
-        const res = await axios.get('/api').then(res => res);
-        setDatas(res.data);
-    };
-    React.useEffect(() => {
-        asyncHello();
-    }, []);
-
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <p>{datas && datas.title}</p>
-            </header>
-        </div>
+        <Switch>
+            <Route exact path="/">
+                <Home />
+            </Route>
+            <Route path="/chatroom">
+                <ChatRoom />
+            </Route>
+        </Switch>
     );
 }
 
