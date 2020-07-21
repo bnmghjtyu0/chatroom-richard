@@ -1,26 +1,34 @@
 {
-    "name": "chatroom-richard",
-    "version": "0.0.0",
-    "private": true,
-    "scripts": {
-        "start": "node ./bin/www",
-        "dev": "concurrently \"npm run server\" \"npm run client\"",
-        "client-install": "npm install --prefix client",
-        "server": "nodemon ./bin/www",
-        "client": "npm start --prefix client",
-        "heroku-postbuild": "cd client && npm install && npm run build"
-    },
-    "dependencies": {
-        "axios": "^0.19.2",
-        "concurrently": "^5.1.0",
-        "cookie-parser": "~1.4.4",
-        "debug": "~2.6.9",
-        "express": "~4.16.1",
-        "http-errors": "~1.6.3",
-        "morgan": "~1.9.1",
-        "nodemon": "^2.0.2",
-        "pug": "2.0.0-beta11",
-        "socket.io": "^2.3.0",
-        "use-socketio": "^2.0.3"
-    }
+  "name": "chatroom-richard",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./src/bin/www",
+    "client-install": "npm install --prefix client",
+    "client": "npm start --prefix client",
+    "server": "nodemon",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "watch-ts": "tsc -w",
+    "heroku-postbuild": "cd client && npm install && npm run build"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "concurrently": "^5.1.0",
+    "cookie-parser": "~1.4.4",
+    "cross-env": "^7.0.2",
+    "express": "~4.16.1",
+    "http-errors": "^1.6.3",
+    "morgan": "~1.9.1",
+    "nodemon": "^2.0.2",
+    "pug": "2.0.0-beta11",
+    "socket.io": "^2.3.0",
+    "use-socketio": "^2.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.23",
+    "debug": "^2.6.9",
+    "rimraf": "^3.0.2",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
+  }
 }

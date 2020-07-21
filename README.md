@@ -1,13 +1,16 @@
-# chat-example
+### 參考文檔
+https://github.com/Microsoft/TypeScript-Node-Starter#typescript--node
 
-This is the source code for a very simple chat example used for
-the [Getting Started](http://socket.io/get-started/chat/) guide
-of the Socket.IO website.
 
-Please refer to it to learn how to run this application.
+### 開發模式
 
-You can also spin up a free Heroku dyno to test it out:
+```
+yarn install
+yarn watch-ts
+yarn dev
+```
 
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/socketio/chat-example)
+- 1 - `watch-ts` - build typescript
+- 2 - `dev` - 開發模式
 
-Besides, the application is deployed on [Now](https://zeit.co/now): https://socketio-chat-example.now.sh/
+

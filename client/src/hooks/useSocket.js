@@ -4,18 +4,25 @@ import socketClient from "socket.io-client";
 import { useImmer } from "use-immer";
 
 export const useSocket = (serverUrl, topic) => {
-  const socket = socketClient.connect("/");
   const [messages, setMessages] = useImmer([]);
   const [chatContent, setChatContent] = React.useState(["Hello"]);
   const [isConnected, setConnected] = React.useState(false);
+  const [socket, setSocket] = React.useState(null);
 
   React.useEffect(() => {
-    socket.on("connect", () => setConnected(true));
-    socket.on("disconnect", () => setConnected(false));
-    if (isConnected) {
-      initWebSocket();
+    const webSocket = socketClient.connect("/");
+    setSocket(webSocket);
+  }, []);
+
+  React.useEffect(() => {
+    if (socket) {
+      socket.on("connect", () => setConnected(true));
+      socket.on("disconnect", () => setConnected(false));
+      if (isConnected) {
+        initWebSocket();
+      }
     }
-  }, [serverUrl, topic, isConnected]);
+  }, [socket,serverUrl, isConnected]);
 
   //設定監聽
   const initWebSocket = () => {
