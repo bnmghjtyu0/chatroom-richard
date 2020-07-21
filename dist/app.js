@@ -3,14 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
+var express_1 = __importDefault(require("express"));
 var index_1 = __importDefault(require("./routes/index"));
-// var indexRouter = require('./routes/index')
-var app = express();
-app.use(express.static(path.join(__dirname, "client/build")));
-app.route("/", {});
+var createError = require("http-errors");
+var path = require("path");
+var app = express_1.default();
+app.use(express_1.default.static(path.join(__dirname, "client/build")));
+app.route("/");
 app.use("/api", index_1.default);
 app.get("*", function (req, res) {
     res.sendFile(path.join(__dirname + "/client/build/index.html"));

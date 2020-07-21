@@ -53,7 +53,6 @@ module.exports = function (io) {
         });
         socket.on("chatMessage", function (message) {
             var user = getCurrentUser(socket.id);
-            console.log(user);
             io.in(user.room).emit('message', formatMessage(user.username, message)); //私推 只有相同房間才會收到訊息
             // io.sockets.emit("message", formatMessage(user.username, message)); //廣播推
             // socket.broadcast.emit("getMessageLess", message); //除了自己外所有人收到回傳
