@@ -1,7 +1,9 @@
 import React from "react";
 import webSocket from "socket.io-client";
 import withLayout from "../../components/layout";
-
+import { FormGroup } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
 const ChatRoom = () => {
   const [chatPeople, setChatPeople] = React.useState([
     {
@@ -110,6 +112,9 @@ const ChatRoom = () => {
   };
   return (
     <React.Fragment>
+      <Button variant="contained" color="primary">
+        你好，世界
+      </Button>
       <div className="main-head d-flex">
         <div className="main-head-left mr-auto">
           <h1 className="logo">Charming Platform</h1>
@@ -318,19 +323,28 @@ const ChatRoom = () => {
             <div className="chat-room-foot">
               <form onSubmit={sendMessage}>
                 <div className="input-group mb-3">
-                  <div className="input-group-prepend">
-                    <span className="input-group-text" id="basic-addon1">
-                      @
-                    </span>
-                  </div>
-                  <input
-                    className="form-control input-message"
-                    type="text"
+                  <Button variant="contained" color="primary" disableElevation>
+                    @
+                  </Button>
+                  <TextField
                     name="msg"
+                    id="outlined-multiline-static"
+                    label="message..."
+                    multiline
+                    rows={4}
+                    defaultValue="Default Value"
+                    variant="outlined"
                     value={form.msg}
                     onChange={handleForm}
                   />
-                  <button type="submit">送出</button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disableElevation
+                  >
+                    送出
+                  </Button>
                 </div>
               </form>
             </div>
