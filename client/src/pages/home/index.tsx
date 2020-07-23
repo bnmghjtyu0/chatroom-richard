@@ -12,6 +12,13 @@ type MessageProps = {
   text?: string
 }
 
+type RoomUserProps = {
+  room: string
+  users: {
+    username: string
+  }[]
+}
+
 const HomeScreen: React.FunctionComponent = () => {
   const [chatPeople, setChatPeople] = React.useState([
     {
@@ -27,12 +34,14 @@ const HomeScreen: React.FunctionComponent = () => {
   const chatMessageRef = React.useRef<HTMLDivElement>(
     document.createElement('div')
   )
-  const loginFormRef = React.useRef(null)
+  const loginFormRef = React.useRef<HTMLFormElement>(
+    document.createElement('form')
+  )
   const [selectRoom, setSelectRoom] = React.useState('')
   const [roomName, setRoomName] = React.useState('')
-  const [userList, setUserList] = React.useState([])
+  const [userList, setUserList] = React.useState([{ username: '' }])
   const [form, setForm] = React.useState({ msg: '', msgAll: '' })
-  const [chatContent, setChatContent] = React.useState({})
+  const [chatContent, setChatContent] = React.useState([{ username: '' }])
   const [isLogin, setIsLogin] = React.useState(false)
   const [loginUser, setLoginUser] = React.useState({ username: '' })
   const [isConnected, setConnected] = React.useState(false)
@@ -65,7 +74,7 @@ const HomeScreen: React.FunctionComponent = () => {
     }
   }, [socket])
 
-  const sendMessage = (e: React.FormEvent<HTMLInputElement>) => {
+  const sendMessage = (e: any) => {
     e.preventDefault()
     chatMessageRef.current.scrollTop = chatMessageRef.current.scrollHeight
     // console.log("send");
@@ -79,11 +88,11 @@ const HomeScreen: React.FunctionComponent = () => {
     }, 100)
   }
 
-  const handleForm = (e: React.FormEvent<HTMLButtonElement>) => {
+  const handleForm = (e: any) => {
     const { name, value } = e.target
     setForm({ ...form, [name]: value })
   }
-  const onLogin = (e: React.FormEvent<HTMLInputElement>) => {
+  const onLogin = (e: React.FormEvent) => {
     e.preventDefault()
     const username = loginFormRef.current.username.value
 
@@ -94,7 +103,7 @@ const HomeScreen: React.FunctionComponent = () => {
 
       socket.emit('joinRoom', { username, room: selectRoom })
       //room iＦnfo
-      socket.on('roomUsers', ({ room, users }) => {
+      socket.on('roomUsers', ({ room, users }: RoomUserProps) => {
         setRoomName(room)
         setUserList(users)
       })
@@ -103,8 +112,12 @@ const HomeScreen: React.FunctionComponent = () => {
     }
   }
 
-  const ChatList = ({ person, title }) => {
-    console.log(title)
+  type ChatListProps = {
+    person: {
+      username: string
+    }
+  }
+  const ChatList = ({ person }: ChatListProps) => {
     return (
       <li>
         <div className="chat-list-card active">
@@ -241,8 +254,6 @@ const HomeScreen: React.FunctionComponent = () => {
                 <div className="dropdown">
                   <button
                     className="btn"
-                    href="#"
-                    role="button"
                     id="dropdownMenuLink"
                     data-toggle="dropdown"
                     aria-haspopup="true"
@@ -274,7 +285,7 @@ const HomeScreen: React.FunctionComponent = () => {
                 flexDirection: 'column'
               }}
               ref={chatMessageRef}>
-              {chatContent.map((content, contentIdx) => {
+              {chatContent.map((content, contentIdx): => {
                 if (content.username === 'ChatCord Bot') {
                   return (
                     <div style={{ textAlign: 'center' }}>
