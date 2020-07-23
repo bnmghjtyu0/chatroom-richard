@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react'
-import { Route, Switch, Link } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 import { ThemeProvider } from '@material-ui/styles'
 import { Minimal as MinimalLayout } from './layouts'
 import theme from './theme'

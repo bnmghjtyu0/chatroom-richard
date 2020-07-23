@@ -5,11 +5,21 @@ import { FormGroup } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 
-const socket = io('http://localhost:3000')
+const socket = io('/')
 
-type MessageProps = {
+type ChatPeopleProps = {
+  msg?: string
+  msgNum?: number
+  name: string
+  profilePic?: string
+  time?: string
   username?: string
   text?: string
+}[]
+type MessageProps = {
+  username: string
+  text: string
+  time: number
 }
 
 type RoomUserProps = {
@@ -20,7 +30,7 @@ type RoomUserProps = {
 }
 
 const HomeScreen: React.FunctionComponent = () => {
-  const [chatPeople, setChatPeople] = React.useState([
+  const [chatPeople, setChatPeople] = React.useState<ChatPeopleProps>([
     {
       name: 'Richard',
       msg: "Hi,Jordan I Feels like it's ~",
@@ -41,7 +51,9 @@ const HomeScreen: React.FunctionComponent = () => {
   const [roomName, setRoomName] = React.useState('')
   const [userList, setUserList] = React.useState([{ username: '' }])
   const [form, setForm] = React.useState({ msg: '', msgAll: '' })
-  const [chatContent, setChatContent] = React.useState([{ username: '' }])
+  const [chatContent, setChatContent] = React.useState([
+    { username: '', text: '' }
+  ])
   const [isLogin, setIsLogin] = React.useState(false)
   const [loginUser, setLoginUser] = React.useState({ username: '' })
   const [isConnected, setConnected] = React.useState(false)
@@ -61,18 +73,9 @@ const HomeScreen: React.FunctionComponent = () => {
     socket.on('message', (message: MessageProps) => {
       console.log('私推')
       console.log(message)
-      // setChatContent((prevState) => [...prevState, message])
+      setChatContent((prevState) => [...prevState, message])
     })
   }
-  React.useEffect(() => {
-    if (socket) {
-      //連線成功在 console 中打印訊息
-      console.log('success connect!')
-
-      //設定監聽
-      initWebSocket()
-    }
-  }, [socket])
 
   const sendMessage = (e: any) => {
     e.preventDefault()
@@ -141,9 +144,6 @@ const HomeScreen: React.FunctionComponent = () => {
   }
   return (
     <React.Fragment>
-      <Button variant="contained" color="primary">
-        你好，世界
-      </Button>
       <div className="main-head d-flex">
         <div className="main-head-left mr-auto">
           <h1 className="logo">Charming Platform</h1>
@@ -277,15 +277,8 @@ const HomeScreen: React.FunctionComponent = () => {
                 </div>
               </div>
             </div>
-            <div
-              className="chat-room-window"
-              style={{
-                overflowY: 'scroll',
-                display: 'flex',
-                flexDirection: 'column'
-              }}
-              ref={chatMessageRef}>
-              {chatContent.map((content, contentIdx): => {
+            <div className="chat-room-window mb-5" ref={chatMessageRef}>
+              {chatContent.map((content, contentIdx) => {
                 if (content.username === 'ChatCord Bot') {
                   return (
                     <div style={{ textAlign: 'center' }}>
@@ -308,7 +301,7 @@ const HomeScreen: React.FunctionComponent = () => {
                         borderRadius: 6,
                         display: 'flex'
                       }}>
-                      <span>{content.text}</span>
+                      <div dangerouslySetInnerHTML={{ __html: content.text }} />
                       <div style={{ marginLeft: 'auto' }}>
                         <span>{content.username}</span>
                         {/* <span>{content.time}</span> */}
@@ -342,20 +335,19 @@ const HomeScreen: React.FunctionComponent = () => {
             </div>
             <div className="chat-room-foot">
               <form onSubmit={sendMessage}>
-                <div className="input-group mb-3">
-                  <Button variant="contained" color="primary" disableElevation>
-                    @
-                  </Button>
+                <div className="input-group mb-3 align-items-end flex-nowrap">
                   <TextField
                     name="msg"
                     id="outlined-multiline-static"
                     label="message..."
                     multiline
-                    rows={4}
                     defaultValue="Default Value"
                     variant="outlined"
+                    size="small"
+                    rowsMax={4}
                     value={form.msg}
                     onChange={handleForm}
+                    style={{ marginRight: 20 }}
                   />
                   <Button
                     type="submit"

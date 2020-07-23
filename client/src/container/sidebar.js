@@ -24,7 +24,6 @@ const Sidebar = () => {
             <div className="sidebar-center">
                 <nav className="sidebar-list p-0">
                     <NavLink activeOnlyWhenExact={true} to="/" label="Home" />
-                    <NavLink to="/chatroom" label="chatroom" />
                 </nav>
             </div>
         </div>
