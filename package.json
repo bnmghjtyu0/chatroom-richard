@@ -2,13 +2,14 @@
   "name": "chatroom-richard",
   "version": "0.0.0",
   "private": true,
+  "license": "RICHARDLIAO",
   "scripts": {
     "start": "node ./src/bin/www",
     "client-install": "npm install --prefix client",
     "client": "npm start --prefix client",
     "server": "nodemon",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "watch-ts": "tsc -w",
+    "watch-ts": "rimraf ./dist && tsc -w",
     "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "dependencies": {

@@ -1,101 +1,117 @@
-import React from "react";
-import webSocket from "socket.io-client";
-import withLayout from "../../components/layout";
-import { FormGroup } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-const ChatRoom = () => {
+import React, { ReactEventHandler } from 'react'
+import io from 'socket.io-client'
+import withLayout from '../../components/layout'
+import { FormGroup } from '@material-ui/core'
+import Button from '@material-ui/core/Button'
+import TextField from '@material-ui/core/TextField'
+
+const socket = io('http://localhost:3000')
+
+type MessageProps = {
+  username?: string
+  text?: string
+}
+
+const HomeScreen: React.FunctionComponent = () => {
   const [chatPeople, setChatPeople] = React.useState([
     {
-      name: "Richard",
+      name: 'Richard',
       msg: "Hi,Jordan I Feels like it's ~",
-      time: "2min",
+      time: '2min',
       msgNum: 2,
       profilePic:
-        "https://i.pinimg.com/originals/2e/2f/ac/2e2fac9d4a392456e511345021592dd2.jpg",
-    },
-  ]);
-  const [socket, setSocket] = React.useState(null);
-  const chatMessageRef = React.useRef(null);
-  const loginFormRef = React.useRef(null);
-  const [selectRoom, setSelectRoom] = React.useState("");
-  const [roomName, setRoomName] = React.useState("");
-  const [userList, setUserList] = React.useState([]);
-  const [form, setForm] = React.useState({ msg: "", msgAll: "" });
-  const [chatContent, setChatContent] = React.useState(["Hello"]);
-  const [isLogin, setIsLogin] = React.useState(false);
-  const [loginUser, setLoginUser] = React.useState({ username: "" });
-  // React.useEffect(() => {
-  //   //啟動 socket.io
-  //   setSocket(webSocket("/"));
-  // }, []);
+        'https://i.pinimg.com/originals/2e/2f/ac/2e2fac9d4a392456e511345021592dd2.jpg'
+    }
+  ])
+  // const [socket, setSocket] = React.useState()
+  const chatMessageRef = React.useRef<HTMLDivElement>(
+    document.createElement('div')
+  )
+  const loginFormRef = React.useRef(null)
+  const [selectRoom, setSelectRoom] = React.useState('')
+  const [roomName, setRoomName] = React.useState('')
+  const [userList, setUserList] = React.useState([])
+  const [form, setForm] = React.useState({ msg: '', msgAll: '' })
+  const [chatContent, setChatContent] = React.useState({})
+  const [isLogin, setIsLogin] = React.useState(false)
+  const [loginUser, setLoginUser] = React.useState({ username: '' })
+  const [isConnected, setConnected] = React.useState(false)
+  React.useEffect(() => {
+    //  啟動 socket.io
+    if (socket) {
+      socket.on('connect', () => setConnected(true))
+      socket.on('disconnect', () => setConnected(false))
+      if (isConnected) {
+        initWebSocket()
+      }
+    }
+  }, [socket, isConnected])
   //設定監聽
   const initWebSocket = () => {
     //對 getMessage 設定監聽，如果 server 有透過 getMessage 傳送訊息，將會在此被捕捉
-    socket.on("message", (message) => {
-      console.log("私推");
-      console.log(message);
-      chatContent.push(message);
-      setChatContent([...chatContent]);
-    });
-  };
+    socket.on('message', (message: MessageProps) => {
+      console.log('私推')
+      console.log(message)
+      // setChatContent((prevState) => [...prevState, message])
+    })
+  }
   React.useEffect(() => {
     if (socket) {
       //連線成功在 console 中打印訊息
-      console.log("success connect!");
+      console.log('success connect!')
 
       //設定監聽
-      initWebSocket();
+      initWebSocket()
     }
-  }, [socket]);
+  }, [socket])
 
-  const sendMessage = (e) => {
-    e.preventDefault();
-    chatMessageRef.current.scrollTop = chatMessageRef.current.scrollHeight;
+  const sendMessage = (e: React.FormEvent<HTMLInputElement>) => {
+    e.preventDefault()
+    chatMessageRef.current.scrollTop = chatMessageRef.current.scrollHeight
     // console.log("send");
     // 送出後，清空 input 資料
-    console.log(form);
-    if (form.msg === "") return false;
+    console.log(form)
+    if (form.msg === '') return false
     //以 emit 送訊息，並以 getMessage 為名稱送給 server 捕捉
     setTimeout(() => {
-      socket.emit("chatMessage", form.msg);
-      setForm({ ...form, msg: "" });
-    }, 100);
-  };
+      socket.emit('chatMessage', form.msg)
+      setForm({ ...form, msg: '' })
+    }, 100)
+  }
 
-  const handleForm = (e) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-  };
-  const onLogin = (e) => {
-    e.preventDefault();
-    const username = loginFormRef.current.username.value;
+  const handleForm = (e: React.FormEvent<HTMLButtonElement>) => {
+    const { name, value } = e.target
+    setForm({ ...form, [name]: value })
+  }
+  const onLogin = (e: React.FormEvent<HTMLInputElement>) => {
+    e.preventDefault()
+    const username = loginFormRef.current.username.value
 
-    const index = userList.findIndex((user) => user.username === username);
+    const index = userList.findIndex((user) => user.username === username)
     if (index === -1) {
-      setLoginUser({ username: username });
-      setIsLogin(true);
+      setLoginUser({ username: username })
+      setIsLogin(true)
 
-      socket.emit("joinRoom", { username, room: selectRoom });
+      socket.emit('joinRoom', { username, room: selectRoom })
       //room iＦnfo
-      socket.on("roomUsers", ({ room, users }) => {
-        setRoomName(room);
-        setUserList(users);
-      });
+      socket.on('roomUsers', ({ room, users }) => {
+        setRoomName(room)
+        setUserList(users)
+      })
     } else {
-      console.log("已經有相同的使用者");
+      console.log('已經有相同的使用者')
     }
-  };
+  }
 
   const ChatList = ({ person, title }) => {
-    console.log(title);
+    console.log(title)
     return (
       <li>
         <div className="chat-list-card active">
           <div
             className="profile-picture-sm"
             style={{
-              backgroundImage: `url('https://i.pinimg.com/originals/2e/2f/ac/2e2fac9d4a392456e511345021592dd2.jpg')`,
+              backgroundImage: `url('https://i.pinimg.com/originals/2e/2f/ac/2e2fac9d4a392456e511345021592dd2.jpg')`
             }}
           />
           <div className="chat-list-card-name">
@@ -108,8 +124,8 @@ const ChatRoom = () => {
           </div>
         </div>
       </li>
-    );
-  };
+    )
+  }
   return (
     <React.Fragment>
       <Button variant="contained" color="primary">
@@ -152,14 +168,14 @@ const ChatRoom = () => {
             <ul className="chat-list scrollbar-style1">
               {chatPeople &&
                 chatPeople.map((person, personIdx) => {
-                  console.log(person);
+                  console.log(person)
                   return (
                     <li>
                       <div className="chat-list-card active">
                         <div
                           className="profile-picture-sm"
                           style={{
-                            backgroundImage: `url(${person.profilePic})`,
+                            backgroundImage: `url(${person.profilePic})`
                           }}
                         />
                         <div className="chat-list-card-name">
@@ -176,7 +192,7 @@ const ChatRoom = () => {
                         </div>
                       </div>
                     </li>
-                  );
+                  )
                 })}
             </ul>
           </div>
@@ -187,20 +203,18 @@ const ChatRoom = () => {
               <input type="text" name="username" />
               <button
                 onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setSelectRoom("react room");
-                }}
-              >
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setSelectRoom('react room')
+                }}>
                 react room
               </button>
               <button
                 onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setSelectRoom("vue room");
-                }}
-              >
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setSelectRoom('vue room')
+                }}>
                 vue room
               </button>
               <button type="submit">登入</button>
@@ -215,7 +229,7 @@ const ChatRoom = () => {
                     className="profile-picture-lg"
                     style={{
                       backgroundImage:
-                        "url('https://i.pinimg.com/originals/2e/2f/ac/2e2fac9d4a392456e511345021592dd2.jpg')",
+                        "url('https://i.pinimg.com/originals/2e/2f/ac/2e2fac9d4a392456e511345021592dd2.jpg')"
                     }}
                   />
                   <div className="chat-room-head-name">
@@ -232,15 +246,13 @@ const ChatRoom = () => {
                     id="dropdownMenuLink"
                     data-toggle="dropdown"
                     aria-haspopup="true"
-                    aria-expanded="false"
-                  >
+                    aria-expanded="false">
                     <i className="gg-more-vertical-alt" />
                   </button>
 
                   <div
                     className="dropdown-menu"
-                    aria-labelledby="dropdownMenuLink"
-                  >
+                    aria-labelledby="dropdownMenuLink">
                     <a className="dropdown-item" href="#">
                       Action
                     </a>
@@ -257,66 +269,63 @@ const ChatRoom = () => {
             <div
               className="chat-room-window"
               style={{
-                overflowY: "scroll",
-                display: "flex",
-                flexDirection: "column",
+                overflowY: 'scroll',
+                display: 'flex',
+                flexDirection: 'column'
               }}
-              ref={chatMessageRef}
-            >
+              ref={chatMessageRef}>
               {chatContent.map((content, contentIdx) => {
-                if (content.username === "ChatCord Bot") {
+                if (content.username === 'ChatCord Bot') {
                   return (
-                    <div style={{ textAlign: "center" }}>
+                    <div style={{ textAlign: 'center' }}>
                       <span>{content.text}</span>
                     </div>
-                  );
+                  )
                 }
                 if (content.username === loginUser.username) {
                   // 自己
                   return (
                     <div
                       style={{
-                        background: "#4545a5",
-                        width: "50%",
-                        marginLeft: "auto",
+                        background: '#4545a5',
+                        width: '50%',
+                        marginLeft: 'auto',
                         padding: 12,
                         marginTop: 12,
                         marginBottom: 12,
-                        color: "#fff",
+                        color: '#fff',
                         borderRadius: 6,
-                        display: "flex",
-                      }}
-                    >
+                        display: 'flex'
+                      }}>
                       <span>{content.text}</span>
-                      <div style={{ marginLeft: "auto" }}>
+                      <div style={{ marginLeft: 'auto' }}>
                         <span>{content.username}</span>
                         {/* <span>{content.time}</span> */}
                       </div>
                     </div>
-                  );
+                  )
                 } else {
                   // 其他人
                   return (
                     <div
                       style={{
-                        background: "#fff",
-                        width: "50%",
-                        marginRight: "auto",
+                        background: '#fff',
+                        width: '50%',
+                        marginRight: 'auto',
                         padding: 12,
                         marginTop: 12,
                         marginBottom: 12,
-                        color: "#333",
+                        color: '#333',
                         borderRadius: 6,
-                        display: "flex",
-                      }}
-                    >
+                        display: 'flex'
+                      }}>
                       <span>{content.text}</span>
-                      <div style={{ marginLeft: "auto" }}>
+                      <div style={{ marginLeft: 'auto' }}>
                         <span>{content.username}</span>
                         {/* <span>{content.time}</span> */}
                       </div>
                     </div>
-                  );
+                  )
                 }
               })}
             </div>
@@ -341,8 +350,7 @@ const ChatRoom = () => {
                     type="submit"
                     variant="contained"
                     color="primary"
-                    disableElevation
-                  >
+                    disableElevation>
                     送出
                   </Button>
                 </div>
@@ -352,7 +360,7 @@ const ChatRoom = () => {
         </div>
       </div>
     </React.Fragment>
-  );
-};
+  )
+}
 
-export default withLayout(ChatRoom);
+export default withLayout(HomeScreen)

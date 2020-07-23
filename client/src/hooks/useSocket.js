@@ -9,10 +9,10 @@ export const useSocket = (serverUrl, topic) => {
   const [isConnected, setConnected] = React.useState(false);
   const [socket, setSocket] = React.useState(null);
 
-  React.useEffect(() => {
-    const webSocket = socketClient.connect("/");
-    setSocket(webSocket);
-  }, []);
+  // React.useEffect(() => {
+  //   const webSocket = socketClient.connect("/");
+  //   setSocket(webSocket);
+  // }, []);
 
   React.useEffect(() => {
     if (socket) {
