@@ -1,21 +1,19 @@
 /** @jsx jsx */
 import React, { ReactEventHandler } from 'react'
 import io from 'socket.io-client'
-import withLayout from '../../components/layout'
 import { FormGroup } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import styled from 'styled-components'
 import { css, jsx } from '@emotion/core'
-
+import { withRouter, RouteComponentProps } from 'react-router'
+import { History } from 'history'
 const RsButton = styled(Button)`
   background-color: red;
   &:hover {
     background: green;
   }
 `
-
-const socket = io('/')
 
 type ChatPeopleProps = {
   msg?: string
@@ -39,7 +37,25 @@ type RoomUserProps = {
   }[]
 }
 
-const HomeScreen: React.FunctionComponent = () => {
+type LocationProps = {
+  state: {
+    detail?: {
+      username: string
+      room: string
+    }
+  }
+}
+
+interface ChildComponentProps {
+  history: History
+  /* other props for ChildComponent */
+}
+
+type SomeComponentProps = RouteComponentProps<any>
+
+const HomeScreen: React.FC<any> = ({ history }) => {
+  const location = history.location
+  // location.state?.detail?.username
   const [chatPeople, setChatPeople] = React.useState<ChatPeopleProps>([
     {
       name: 'Richard',
@@ -67,18 +83,26 @@ const HomeScreen: React.FunctionComponent = () => {
   const [isLogin, setIsLogin] = React.useState(false)
   const [loginUser, setLoginUser] = React.useState({ username: '' })
   const [isConnected, setConnected] = React.useState(false)
+  const [socket, setSocket] = React.useState<any>(null)
+  React.useEffect(() => {
+    const webSocket = io('/')
+    setSocket(webSocket)
+  }, [])
+
   React.useEffect(() => {
     //  啟動 socket.io
     if (socket) {
       socket.on('connect', () => setConnected(true))
       socket.on('disconnect', () => setConnected(false))
       if (isConnected) {
+        console.log('以連線')
         initWebSocket()
       }
     }
   }, [socket, isConnected])
   //設定監聽
   const initWebSocket = () => {
+    addRoom(location.state?.detail?.username, location.state?.detail?.room)
     //對 getMessage 設定監聽，如果 server 有透過 getMessage 傳送訊息，將會在此被捕捉
     socket.on('message', (message: MessageProps) => {
       console.log('私推')
@@ -104,6 +128,19 @@ const HomeScreen: React.FunctionComponent = () => {
   const handleForm = (e: any) => {
     const { name, value } = e.target
     setForm({ ...form, [name]: value })
+  }
+
+  const addRoom = (username: string, room: string) => {
+    console.log('aaddd')
+    setLoginUser({ username: username })
+    setIsLogin(true)
+
+    socket.emit('joinRoom', { username, room: room })
+    //room iＦnfo
+    socket.on('roomUsers', ({ room, users }: RoomUserProps) => {
+      setRoomName(room)
+      setUserList(users)
+    })
   }
   const onLogin = (e: React.FormEvent) => {
     e.preventDefault()
@@ -376,4 +413,4 @@ const HomeScreen: React.FunctionComponent = () => {
   )
 }
 
-export default withLayout(HomeScreen)
+export default withRouter(HomeScreen)

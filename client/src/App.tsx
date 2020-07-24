@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Switch, Redirect } from 'react-router-dom'
 import { ThemeProvider } from '@material-ui/styles'
-import { Minimal as MinimalLayout } from './layouts'
+import { Minimal as MinimalLayout, Main as MainLayout } from './layouts'
 import theme from './theme'
 import './App.css'
 import './styles/main.scss'
@@ -28,14 +28,33 @@ const RouteWithLayout: FunctionComponent<Props> = (props) => {
     />
   )
 }
+const PrivateRoute: React.FC<Props> = (props) => {
+  const { layout: Layout, component: Component, ...rest } = props
+  return (
+    <Route
+      {...rest}
+      render={(matchProps: any) =>
+        localStorage.getItem('username') ? (
+          <Layout>
+            <Component {...matchProps} />
+          </Layout>
+        ) : (
+          <Redirect
+            to={{
+              pathname: '/signin'
+            }}
+          />
+        )
+      }
+    />
+  )
+}
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <Switch>
-        <Route exact path="/">
-          <Home />
-        </Route>
+        <PrivateRoute component={Home} exact layout={MainLayout} path="/" />
         <RouteWithLayout
           component={SignIn}
           exact
