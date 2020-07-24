@@ -1,9 +1,19 @@
+/** @jsx jsx */
 import React, { ReactEventHandler } from 'react'
 import io from 'socket.io-client'
 import withLayout from '../../components/layout'
 import { FormGroup } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
+import styled from 'styled-components'
+import { css, jsx } from '@emotion/core'
+
+const RsButton = styled(Button)`
+  background-color: red;
+  &:hover {
+    background: green;
+  }
+`
 
 const socket = io('/')
 
@@ -178,7 +188,7 @@ const HomeScreen: React.FunctionComponent = () => {
                   )
                 )}
             </ul>
-            <ul className="chat-list scrollbar-style1">
+            {/* <ul className="chat-list scrollbar-style1">
               {chatPeople &&
                 chatPeople.map((person, personIdx) => {
                   console.log(person)
@@ -207,7 +217,7 @@ const HomeScreen: React.FunctionComponent = () => {
                     </li>
                   )
                 })}
-            </ul>
+            </ul> */}
           </div>
         </div>
         <div className="main-body-right">
@@ -292,7 +302,7 @@ const HomeScreen: React.FunctionComponent = () => {
                     <div
                       style={{
                         background: '#4545a5',
-                        width: '50%',
+                        width: '70%',
                         marginLeft: 'auto',
                         padding: 12,
                         marginTop: 12,
@@ -314,7 +324,7 @@ const HomeScreen: React.FunctionComponent = () => {
                     <div
                       style={{
                         background: '#fff',
-                        width: '50%',
+                        width: '70%',
                         marginRight: 'auto',
                         padding: 12,
                         marginTop: 12,
@@ -339,11 +349,11 @@ const HomeScreen: React.FunctionComponent = () => {
                   <TextField
                     name="msg"
                     id="outlined-multiline-static"
-                    label="message..."
+                    label="輸入訊息"
                     multiline
                     defaultValue="Default Value"
                     variant="outlined"
-                    size="small"
+                    size="medium"
                     rowsMax={4}
                     value={form.msg}
                     onChange={handleForm}
