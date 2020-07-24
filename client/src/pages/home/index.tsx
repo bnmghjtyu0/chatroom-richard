@@ -215,7 +215,7 @@ const HomeScreen: React.FC<any> = ({ history }) => {
       <div className="main-body d-flex">
         <div id="chat-people" className="main-body-left">
           <div className="chat-people">
-            {loginUser.username.length === 0 ? null : loginUser.username}
+            {Object.keys(loginUser).length === 0 ? null : loginUser.username}
             <h4>線上使用者</h4>
             <ul className="chat-list scrollbar-style1">
               {userList &&
@@ -283,7 +283,7 @@ const HomeScreen: React.FC<any> = ({ history }) => {
 
           <div className="chat-room">
             <div className="chat-room-head">
-              {roomName.length === 0 ? null : (
+              {roomName === "" ? null : (
                 <div className="chat-room-head-left">
                   <div
                     className="profile-picture-lg"

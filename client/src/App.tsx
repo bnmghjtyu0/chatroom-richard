@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from 'react'
 import { Route, Switch, Redirect } from 'react-router-dom'
 import { ThemeProvider } from '@material-ui/styles'
+import UserProvider, { UserContext } from './context/userContext'
 import { Minimal as MinimalLayout, Main as MainLayout } from './layouts'
 import theme from './theme'
 import './App.css'
@@ -13,6 +14,9 @@ type Props = {
   exact: boolean
   layout: FunctionComponent
   path: string
+}
+type PrivateProps = Props & {
+  isLogin: boolean
 }
 const RouteWithLayout: FunctionComponent<Props> = (props) => {
   const { layout: Layout, component: Component, ...rest } = props
@@ -28,13 +32,18 @@ const RouteWithLayout: FunctionComponent<Props> = (props) => {
     />
   )
 }
-const PrivateRoute: React.FC<Props> = (props) => {
-  const { layout: Layout, component: Component, ...rest } = props
+const PrivateRoute: React.FC<PrivateProps> = (props) => {
+  const {
+    layout: Layout,
+    component: Component,
+    isLogin,
+    ...rest
+  } = props
   return (
     <Route
       {...rest}
       render={(matchProps: any) =>
-        localStorage.getItem('username') ? (
+        isLogin ? (
           <Layout>
             <Component {...matchProps} />
           </Layout>
@@ -51,10 +60,17 @@ const PrivateRoute: React.FC<Props> = (props) => {
 }
 
 function App() {
+  const { users, setUsers } = React.useContext(UserContext)
   return (
     <ThemeProvider theme={theme}>
       <Switch>
-        <PrivateRoute component={Home} exact layout={MainLayout} path="/" />
+        <PrivateRoute
+          component={Home}
+          exact
+          layout={MainLayout}
+          path="/"
+          isLogin={users.username !== ''}
+        />
         <RouteWithLayout
           component={SignIn}
           exact

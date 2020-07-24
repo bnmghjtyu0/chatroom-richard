@@ -17,6 +17,7 @@ import { css, jsx } from '@emotion/core'
 import { useForm, Controller } from 'react-hook-form'
 import * as Yup from 'yup'
 import { yupResolver } from '@hookform/resolvers'
+import { UserContext } from '../../context/userContext'
 
 const regex = {
   password: /^[A-Z]+.*/
@@ -126,6 +127,7 @@ const useStyles = makeStyles((theme) => ({
 
 const SignIn = (props) => {
   const { history } = props
+  const { users, setUsers } = React.useContext(UserContext)
   const theme = useTheme()
   const classes = useStyles()
 
@@ -157,6 +159,7 @@ const SignIn = (props) => {
   const onSubmit = (data, e) => {
     e.preventDefault()
     console.log(data)
+    setUsers({ username: data.username, room: data.room })
     localStorage.setItem('username', data.username)
     handleHome(data.username, data.room)
   }
