@@ -1,19 +1,38 @@
 /** @jsx jsx */
 import React, { ReactEventHandler } from 'react'
 import io from 'socket.io-client'
-import { FormGroup } from '@material-ui/core'
+import {
+  FormGroup,
+  FormControl,
+  OutlinedInput,
+  InputAdornment,
+  FormHelperText,
+  Paper,
+  Avatar
+} from '@material-ui/core'
+import { makeStyles } from '@material-ui/styles'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import styled from 'styled-components'
 import { css, jsx } from '@emotion/core'
 import { withRouter, RouteComponentProps } from 'react-router'
 import { History } from 'history'
+import clsx from 'clsx'
+import Icon from '@material-ui/core/Icon'
+
 const RsButton = styled(Button)`
   background-color: red;
   &:hover {
     background: green;
   }
 `
+
+const useStyles = makeStyles((theme) => ({
+  margin: {
+    margin: 0
+  },
+  textField: {}
+}))
 
 type ChatPeopleProps = {
   msg?: string
@@ -54,6 +73,7 @@ interface ChildComponentProps {
 type SomeComponentProps = RouteComponentProps<any>
 
 const HomeScreen: React.FC<any> = ({ history }) => {
+  const classes = useStyles()
   const location = history.location
   // location.state?.detail?.username
   const [chatPeople, setChatPeople] = React.useState<ChatPeopleProps>([
@@ -66,6 +86,8 @@ const HomeScreen: React.FC<any> = ({ history }) => {
         'https://i.pinimg.com/originals/2e/2f/ac/2e2fac9d4a392456e511345021592dd2.jpg'
     }
   ])
+
+  const [searchText, setSearchText] = React.useState('')
   // const [socket, setSocket] = React.useState()
   const chatMessageRef = React.useRef<HTMLDivElement>(
     document.createElement('div')
@@ -197,26 +219,58 @@ const HomeScreen: React.FC<any> = ({ history }) => {
         </div>
       </div>
       <div className="main-search form-inline">
-        <div className="input-group mb-3">
-          <div className="input-group-prepend">
-            <span className="input-group-text" id="basic-addon1">
-              @
-            </span>
-          </div>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search"
-            aria-label="Search"
-            aria-describedby="basic-addon2"
+        <FormControl
+          className={clsx(classes.margin, classes.textField)}
+          variant="outlined">
+          <OutlinedInput
+            id="outlined-adornment-weight"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            startAdornment={
+              <InputAdornment position="start">
+                <Icon
+                  css={css`
+                    font-size: 20px;
+                  `}>
+                  search
+                </Icon>
+              </InputAdornment>
+            }
+            aria-describedby="outlined-weight-helper-text"
+            // inputProps={{
+            //   'aria-label': 'weight'
+            // }}
+            labelWidth={0}
           />
-        </div>
+        </FormControl>
       </div>
       <div className="main-body d-flex">
         <div id="chat-people" className="main-body-left">
-          <div className="chat-people">
-            {Object.keys(loginUser).length === 0 ? null : loginUser.username}
-            <h4>線上使用者</h4>
+          <h4 className="mb-4">自己</h4>
+          <div className="chat-people mb-5">
+            {Object.keys(loginUser).length === 0 ? null : (
+              <div className="chat-list-card active">
+                <div
+                  className="profile-picture-sm"
+                  style={{
+                    backgroundImage: `url('https://i.pinimg.com/originals/2e/2f/ac/2e2fac9d4a392456e511345021592dd2.jpg')`
+                  }}
+                />
+                <div className="chat-list-card-name">
+                  <h4>{loginUser.username}</h4>
+                  {/* <p>{person.msg}</p> */}
+                </div>
+                <div className="chat-list-card-info">
+                  <span className="d-block chat-time">
+                    {/* {person.time} */}
+                  </span>
+                  <span className="badge badge-warning">
+                    {/* {person.msgNum} */}
+                  </span>
+                </div>
+              </div>
+            )}
+            <h4 className="mt-3">線上使用者</h4>
             <ul className="chat-list scrollbar-style1">
               {userList &&
                 userList.map((person, i) =>
@@ -283,7 +337,7 @@ const HomeScreen: React.FC<any> = ({ history }) => {
 
           <div className="chat-room">
             <div className="chat-room-head">
-              {roomName === "" ? null : (
+              {roomName === '' ? null : (
                 <div className="chat-room-head-left">
                   <div
                     className="profile-picture-lg"
@@ -336,44 +390,62 @@ const HomeScreen: React.FC<any> = ({ history }) => {
                 if (content.username === loginUser.username) {
                   // 自己
                   return (
-                    <div
-                      style={{
-                        background: '#4545a5',
-                        width: '70%',
-                        marginLeft: 'auto',
-                        padding: 12,
-                        marginTop: 12,
-                        marginBottom: 12,
-                        color: '#fff',
-                        borderRadius: 6,
-                        display: 'flex'
-                      }}>
-                      <div dangerouslySetInnerHTML={{ __html: content.text }} />
-                      <div style={{ marginLeft: 'auto' }}>
-                        <span>{content.username}</span>
-                        {/* <span>{content.time}</span> */}
+                    <div className="d-flex align-items-end">
+                      <div
+                        style={{
+                          background: '#4545a5',
+                          width: '70%',
+                          marginLeft: 'auto',
+                          padding: 20,
+                          marginTop: 26,
+                          color: '#fff',
+                          borderRadius: 6,
+                          display: 'flex'
+                        }}>
+                        <div
+                          dangerouslySetInnerHTML={{ __html: content.text }}
+                        />
+                        <div style={{ marginLeft: 'auto' }}>
+                          <span>{content.username}</span>
+                          {/* <span>{content.time}</span> */}
+                        </div>
                       </div>
+                      <Avatar
+                        alt={content.username}
+                        src="/static/images/avatar/1.jpg"
+                        css={css`
+                          margin-left: 10px;
+                        `}
+                      />
                     </div>
                   )
                 } else {
                   // 其他人
                   return (
-                    <div
-                      style={{
-                        background: '#fff',
-                        width: '70%',
-                        marginRight: 'auto',
-                        padding: 12,
-                        marginTop: 12,
-                        marginBottom: 12,
-                        color: '#333',
-                        borderRadius: 6,
-                        display: 'flex'
-                      }}>
-                      <span>{content.text}</span>
-                      <div style={{ marginLeft: 'auto' }}>
-                        <span>{content.username}</span>
-                        {/* <span>{content.time}</span> */}
+                    <div className="d-flex align-items-end">
+                      <Avatar
+                        alt={content.username}
+                        src="/static/images/avatar/1.jpg"
+                        css={css`
+                          margin-right: 10px;
+                        `}
+                      />
+                      <div
+                        style={{
+                          background: '#fff',
+                          width: '70%',
+                          marginRight: 'auto',
+                          padding: 20,
+                          marginTop: 26,
+                          color: '#333',
+                          borderRadius: 6,
+                          display: 'flex'
+                        }}>
+                        <span>{content.text}</span>
+                        <div style={{ marginLeft: 'auto' }}>
+                          <span>{content.username}</span>
+                          {/* <span>{content.time}</span> */}
+                        </div>
                       </div>
                     </div>
                   )

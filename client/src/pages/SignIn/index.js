@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { Link as RouterLink, withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import validate from 'validate.js'
-import { makeStyles, useTheme } from '@material-ui/styles'
+import { makeStyles, useTheme, withStyles } from '@material-ui/styles'
 import {
   Grid,
   Button,
@@ -11,6 +11,7 @@ import {
   TextField,
   Typography
 } from '@material-ui/core'
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 
 import { css, jsx } from '@emotion/core'
@@ -122,14 +123,45 @@ const useStyles = makeStyles((theme) => ({
   },
   signInButton: {
     margin: theme.spacing(2, 0)
+  },
+  toggleButton: {
+    padding: "6px 12px",
+    marginRight: 12,
+
+    '&.Mui-selected': {
+      background: theme.palette.primary.main,
+      color: '#fff',
+      '&:hover': {
+        background: theme.palette.primary.main,
+        color: '#fff'
+      }
+    },
+    '&:hover': {
+      background: theme.palette.primary.main,
+      color: '#fff'
+    }
   }
 }))
 
+const StyledToggleButtonGroup = withStyles((theme) => ({
+  grouped: {
+    // margin: theme.spacing(0.5),
+    // border: 'none',
+    '&:not(:first-child)': {
+      borderLeft: '1px solid rgba(0, 0, 0, 0.12)',
+      borderRadius: 4
+    },
+    '&:first-child': {
+      borderRadius: 4
+      // borderRadius: theme.shape.borderRadius
+    }
+  }
+}))(ToggleButtonGroup)
 const SignIn = (props) => {
   const { history } = props
-  const { users, setUsers } = React.useContext(UserContext)
   const theme = useTheme()
   const classes = useStyles()
+  const { users, setUsers } = React.useContext(UserContext)
 
   const handleBack = () => {
     history.goBack()
@@ -158,14 +190,13 @@ const SignIn = (props) => {
 
   const onSubmit = (data, e) => {
     e.preventDefault()
-    console.log(data)
     setUsers({ username: data.username, room: data.room })
     localStorage.setItem('username', data.username)
     handleHome(data.username, data.room)
   }
+
   return (
     <div className={classes.root}>
-      {console.log(Object.keys(errors))}
       <Grid className={classes.grid} container>
         <Grid className={classes.quoteContainer} item lg={5}>
           <div className={classes.quote}>
@@ -188,14 +219,14 @@ const SignIn = (props) => {
         <Grid className={classes.content} item lg={7} xs={12}>
           <div className={classes.content}>
             <div className={classes.contentHeader}>
-              <IconButton onClick={handleBack}>
+              {/* <IconButton onClick={handleBack}>
                 <ArrowBackIcon />
-              </IconButton>
+              </IconButton> */}
             </div>
             <div className={classes.contentBody}>
               <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
                 <Typography className={classes.title} variant="h2">
-                  Sign in
+                  輸入名字進入聊天室
                 </Typography>
                 <Controller
                   as={
@@ -243,18 +274,36 @@ const SignIn = (props) => {
                 </p>
                 <Controller
                   as={
-                    <TextField
-                      className={classes.textField}
-                      fullWidth
-                      label="room"
-                      type="room"
-                      variant="outlined"
-                      error={errors.room}
-                    />
+                    <StyledToggleButtonGroup
+                      exclusive
+                      aria-label="text alignment"
+                      className={classes.toggleGroup}>
+                      <ToggleButton
+                        value="RoomA"
+                        aria-label="RoomA"
+                        className={classes.toggleButton}>
+                        RoomA
+                      </ToggleButton>
+                      <ToggleButton
+                        value="RoomB"
+                        aria-label="RoomB"
+                        className={classes.toggleButton}>
+                        RoomB
+                      </ToggleButton>
+                      <ToggleButton
+                        value="RoomC"
+                        aria-label="RoomC"
+                        className={classes.toggleButton}>
+                        RoomC
+                      </ToggleButton>
+                    </StyledToggleButtonGroup>
                   }
                   name="room"
                   control={control}
-                  defaultValue=""
+                  defaultValue="RoomA"
+                  css={css`
+                    margin-top: 16px;
+                  `}
                 />
                 <p
                   css={css`
