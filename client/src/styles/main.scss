@@ -171,9 +171,6 @@ body {
   height: 100%;
   .chat-room-head {
     display: flex;
-    @include mediaQuery(col-xs) {
-      display: none;
-    }
     .chat-room-head-left {
       display: flex;
       align-items: center;

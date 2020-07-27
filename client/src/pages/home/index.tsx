@@ -89,7 +89,7 @@ const HomeScreen: React.FC<any> = ({ history }) => {
 
   const [searchText, setSearchText] = React.useState('')
   // const [socket, setSocket] = React.useState()
-  const chatMessageRef = React.useRef<HTMLDivElement>(
+  const chatMessageWindowRef = React.useRef<HTMLDivElement>(
     document.createElement('div')
   )
   const loginFormRef = React.useRef<HTMLFormElement>(
@@ -144,10 +144,10 @@ const HomeScreen: React.FC<any> = ({ history }) => {
 
   const sendMessage = (e: any) => {
     e.preventDefault()
-    chatMessageRef.current.scrollTop = chatMessageRef.current.scrollHeight
+    chatMessageWindowRef.current.scrollTop =
+      chatMessageWindowRef.current.scrollHeight
     // console.log("send");
     // 送出後，清空 input 資料
-    console.log(form)
     if (form.msg === '') return false
     //以 emit 送訊息，並以 getMessage 為名稱送給 server 捕捉
     setTimeout(() => {
@@ -325,29 +325,6 @@ const HomeScreen: React.FC<any> = ({ history }) => {
           </div>
         </div>
         <div className="main-body-right">
-          {isLogin ? null : (
-            <form ref={loginFormRef} onSubmit={onLogin}>
-              <input type="text" name="username" />
-              <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  setSelectRoom('react room')
-                }}>
-                react room
-              </button>
-              <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  setSelectRoom('vue room')
-                }}>
-                vue room
-              </button>
-              <button type="submit">登入</button>
-            </form>
-          )}
-
           <div className="chat-room">
             <div className="chat-room-head">
               {roomName === '' ? null : (
@@ -355,8 +332,7 @@ const HomeScreen: React.FC<any> = ({ history }) => {
                   <div
                     className="profile-picture-lg"
                     style={{
-                      backgroundImage:
-                        "url('https://i.pinimg.com/originals/2e/2f/ac/2e2fac9d4a392456e511345021592dd2.jpg')"
+                      backgroundImage: `url('${require('../../assets/images/room.png')}')`
                     }}
                   />
                   <div className="chat-room-head-name">
@@ -391,7 +367,7 @@ const HomeScreen: React.FC<any> = ({ history }) => {
                 </div>
               </div>
             </div>
-            <div className="chat-room-window mb-5" ref={chatMessageRef}>
+            <div className="chat-room-window mb-5" ref={chatMessageWindowRef}>
               {chatContent.map((content, contentIdx) => {
                 if (content.username === 'ChatCord Bot') {
                   return (
@@ -412,15 +388,12 @@ const HomeScreen: React.FC<any> = ({ history }) => {
                           padding: 20,
                           marginTop: 26,
                           color: '#fff',
-                          borderRadius: 6,
+                          borderRadius: '6px 6px 0 6px',
                           display: 'flex'
                         }}>
                         <div
                           dangerouslySetInnerHTML={{ __html: content.text }}
                         />
-                        <div style={{ marginLeft: 'auto' }}>
-                          <span>{content.username}</span>
-                        </div>
                       </div>
                       <Avatar
                         alt={content.username}
@@ -450,14 +423,10 @@ const HomeScreen: React.FC<any> = ({ history }) => {
                           padding: 20,
                           marginTop: 26,
                           color: '#333',
-                          borderRadius: 6,
+                          borderRadius: '6px 6px 6px 0',
                           display: 'flex'
                         }}>
                         <span>{content.text}</span>
-                        <div style={{ marginLeft: 'auto' }}>
-                          <span>{content.username}</span>
-                          {/* <span>{content.time}</span> */}
-                        </div>
                       </div>
                     </div>
                   )
