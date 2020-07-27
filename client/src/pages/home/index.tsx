@@ -106,6 +106,8 @@ const HomeScreen: React.FC<any> = ({ history }) => {
   const [loginUser, setLoginUser] = React.useState({ username: '' })
   const [isConnected, setConnected] = React.useState(false)
   const [socket, setSocket] = React.useState<any>(null)
+  var keyBoardMap: any = {}
+
   React.useEffect(() => {
     const webSocket = io('/')
     setSocket(webSocket)
@@ -130,6 +132,13 @@ const HomeScreen: React.FC<any> = ({ history }) => {
       console.log('私推')
       console.log(message)
       setChatContent((prevState) => [...prevState, message])
+    })
+    //room iＦnfo
+    socket.on('roomUsers', ({ room, users }: RoomUserProps) => {
+      console.log('roomUser', room)
+      console.log('roomUser', users)
+      setRoomName(room)
+      setUserList(users)
     })
   }
 
@@ -211,6 +220,7 @@ const HomeScreen: React.FC<any> = ({ history }) => {
       </li>
     )
   }
+
   return (
     <React.Fragment>
       <div className="main-head d-flex">
@@ -218,36 +228,39 @@ const HomeScreen: React.FC<any> = ({ history }) => {
           <h1 className="logo">Charming Platform</h1>
         </div>
       </div>
-      <div className="main-search form-inline">
-        <FormControl
-          className={clsx(classes.margin, classes.textField)}
-          variant="outlined">
-          <OutlinedInput
-            id="outlined-adornment-weight"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            startAdornment={
-              <InputAdornment position="start">
-                <Icon
-                  css={css`
-                    font-size: 20px;
-                  `}>
-                  search
-                </Icon>
-              </InputAdornment>
-            }
-            aria-describedby="outlined-weight-helper-text"
-            // inputProps={{
-            //   'aria-label': 'weight'
-            // }}
-            labelWidth={0}
-          />
-        </FormControl>
-      </div>
+
       <div className="main-body d-flex">
         <div id="chat-people" className="main-body-left">
           <h4 className="mb-4">自己</h4>
           <div className="chat-people mb-5">
+            {' '}
+            <div className="main-search form-inline">
+              <FormControl
+                className={clsx(classes.margin, classes.textField)}
+                variant="outlined">
+                <OutlinedInput
+                  fullWidth={true}
+                  id="outlined-adornment-weight"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  startAdornment={
+                    <InputAdornment position="start">
+                      <Icon
+                        css={css`
+                          font-size: 20px;
+                        `}>
+                        search
+                      </Icon>
+                    </InputAdornment>
+                  }
+                  aria-describedby="outlined-weight-helper-text"
+                  // inputProps={{
+                  //   'aria-label': 'weight'
+                  // }}
+                  labelWidth={0}
+                />
+              </FormControl>
+            </div>
             {Object.keys(loginUser).length === 0 ? null : (
               <div className="chat-list-card active">
                 <div
@@ -407,7 +420,6 @@ const HomeScreen: React.FC<any> = ({ history }) => {
                         />
                         <div style={{ marginLeft: 'auto' }}>
                           <span>{content.username}</span>
-                          {/* <span>{content.time}</span> */}
                         </div>
                       </div>
                       <Avatar
@@ -467,6 +479,18 @@ const HomeScreen: React.FC<any> = ({ history }) => {
                     value={form.msg}
                     onChange={handleForm}
                     style={{ marginRight: 20 }}
+                    InputProps={{
+                      onKeyDown: (
+                        event: React.KeyboardEvent<HTMLInputElement>
+                      ) => {
+                        keyBoardMap[event.keyCode] = event.type
+                        console.log(keyBoardMap)
+                        if (keyBoardMap[91] && keyBoardMap[13]) {
+                          console.log('ok')
+                          sendMessage(event)
+                        }
+                      }
+                    }}
                   />
                   <Button
                     type="submit"

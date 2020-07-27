@@ -1,5 +1,7 @@
 import React from 'react'
 import { Link, useRouteMatch } from 'react-router-dom'
+import Icon from '@material-ui/core/Icon'
+import { css, jsx } from '@emotion/core'
 
 function NavLink({ label, to, activeOnlyWhenExact }) {
   let match = useRouteMatch({
@@ -23,7 +25,18 @@ const Sidebar = () => {
       </div>
       <div className="sidebar-center">
         <nav className="sidebar-list p-0">
-          <NavLink activeOnlyWhenExact={true} to="/" label="Home" />
+          <NavLink
+            activeOnlyWhenExact={true}
+            to="/"
+            label={
+              <Icon
+                css={css`
+                  font-size: 30px;
+                `}>
+                home
+              </Icon>
+            }
+          />
         </nav>
       </div>
     </div>
